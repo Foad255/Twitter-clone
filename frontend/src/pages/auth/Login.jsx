@@ -5,23 +5,60 @@ import XSvg from "../../assets/X";
 
 import { MdOutlineMail } from "react-icons/md";
 import { MdPassword } from "react-icons/md";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
 	const [formData, setFormData] = useState({
 		username: "",
 		password: "",
 	});
+	const queryClient = useQueryClient()
+	const mutation = useMutation({
+		mutationFn: async (formData) => {
+			try {
+				const {username, password} = formData
+				const res = await fetch('/api/auth/signin', {
+					method: 'POST',
+					headers: {
+						'Content-Type' : 'application/json'
+					},
+					body: JSON.stringify({username, password})
+				})
+				if (!res.ok) {
+					const error = await res.json()
+					toast.dismiss()
+					toast.error(error.error)
+					throw new Error(error)
+				}
+			return res.json()
+			} catch (err) {
+				throw new Error(err)
+			}
+		},
+		onMutate: () => {
+			toast.dismiss()
+			toast.loading('Login in...')
+		},
+		onSuccess: () => {
+			toast.dismiss()
+			toast.success('Welcome back')
+			// run function under queryKey called 'authUser'
+			queryClient.invalidateQueries({queryKey: ['authUser']})
+
+		}
+	})
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		console.log(formData);
+		mutation.mutate(formData)
 	};
 
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
 
-	const isError = false;
 
 	return (
 		<div className='max-w-screen-xl mx-auto flex h-screen'>
@@ -55,8 +92,9 @@ const LoginPage = () => {
 							value={formData.password}
 						/>
 					</label>
-					<button className='btn rounded-full btn-primary text-white'>Login</button>
-					{isError && <p className='text-red-500'>Something went wrong</p>}
+					<button className='btn rounded-full btn-primary text-white'>
+						{mutation.isPending? "Loading..." : "Login"}</button>
+					{mutation.isError && <p className='text-red-500'>Something went wrong</p>}
 				</form>
 				<div className='flex flex-col gap-2 mt-4'>
 					<p className='text-white text-lg'>{"Don't"} have an account?</p>
