@@ -45,7 +45,6 @@ const LoginPage = () => {
 			toast.success('Welcome back')
 			// run function under queryKey called 'authUser'
 			queryClient.invalidateQueries({queryKey: ['authUser']})
-
 		}
 	})
 

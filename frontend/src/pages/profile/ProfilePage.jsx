@@ -35,7 +35,6 @@ const ProfilePage = () => {
 		followers: ["1", "2", "3"],
 	};
 
-  //TODO:
 	const handleImgChange = (e, state) => {
 		const file = e.target.files[0];
 		if (file) {
