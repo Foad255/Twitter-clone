@@ -45,6 +45,8 @@ const queryClient = useQueryClient()
 		setImg(null)
 		toast.dismiss()
 		toast.success('Created successfully')
+	}, onError: () => {
+		toast.dismiss() 
 	}
 })
 

@@ -1,18 +1,32 @@
 import { Link } from "react-router-dom";
+import { ImSpinner9 } from "react-icons/im";
 import RightPanelSkeleton from "../skeletons/RightPanelSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import useFollow from "../hooks/useFollow";
+import { useState } from "react";
 
 const RightPanel = () => {
   const { data: suggestedUsers = [], isLoading } = useQuery({
-    queryKey: ["suggestedUsers"], // Ensure this is an array
+    queryKey: ["suggestedUsers"],
     queryFn: async () => {
       const res = await axios.get("/api/user/suggestions");
-      return res.data || []; // Ensure data is returned
+      return res.data || [];
     },
   });
-  // avoid stretching the page
-  if (suggestedUsers.length === 0) return <div className="md:w-64 w-0"></div>;
+  const { follow } = useFollow();
+
+  const [loadingUserId, setLoadingUserId] = useState(null); // Track the loading state for each user
+
+  // Avoid stretching the page
+  if (suggestedUsers.length === 0)
+    return (
+      <div className="md:w-64 w-0">
+        <div className="bg-[#16181C] p-4 rounded-md sticky top-2">
+          <p className="font-bold">No more to Follow</p>
+        </div>
+      </div>
+    );
 
   return (
     <div className="hidden lg:block my-4 mx-2">
@@ -44,15 +58,30 @@ const RightPanel = () => {
                     <span className="font-semibold tracking-tight truncate w-28">
                       {user.fullName}
                     </span>
-                    <span className="text-sm text-slate-500">@{user.userName}</span>
+                    <span className="text-sm text-slate-500">
+                      @{user.userName}
+                    </span>
                   </div>
                 </div>
                 <div>
                   <button
                     className="btn bg-white text-black hover:bg-white hover:opacity-90 rounded-full btn-sm"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setLoadingUserId(user._id); // Set loading state for the user
+                      follow(user._id, {
+                        onSettled: () => {
+                          setLoadingUserId(null); // Reset loading state when mutation is settled
+                        },
+                      });
+                    }}
+                    disabled={loadingUserId === user._id} // Disable button if this user's follow is pending
                   >
-                    Follow
+                    {loadingUserId === user._id ? (
+                      <ImSpinner9 className="animate-spin" />
+                    ) : (
+                      "Follow"
+                    )}
                   </button>
                 </div>
               </Link>

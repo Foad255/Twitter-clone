@@ -1,8 +1,9 @@
 import { FaRegComment } from "react-icons/fa";
 import { BiRepost } from "react-icons/bi";
-import { FaRegHeart } from "react-icons/fa";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { FaRegBookmark } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
+import { ImSpinner9 } from "react-icons/im";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,37 +14,33 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 const Post = ({ post }) => {
   const [comment, setComment] = useState("");
   const postOwner = post.user;
-  const isLiked = false;
-  // is my post -get the authuser - compare authuserId with post.user._id
+
+  const isCommenting = false;
   const { data: authuser } = useQuery({ queryKey: ["authUser"] });
-  const isMyPost = authuser._id === post.user._id ? true : false;
+  const isMyPost = authuser._id === post.user._id;
 
   const queryClient = useQueryClient();
   const formattedDate = "1h";
-  const isCommenting = false;
 
-  const mutation = useMutation({
+  const deleteMutation = useMutation({
     mutationFn: async (postId) => {
       try {
-          const res = await axios.delete(`/api/post/delete/${postId}`);
-      return res.data;
+        const res = await axios.delete(`/api/post/delete/${postId}`);
+        return res.data;
       } catch (err) {
         if (err.response) {
-          // out of 2xx
-          throw new Error(err.response.data.error)
+          throw new Error(err.response.data.error);
         } else if (err.request) {
-          throw new Error('No response received')
+          throw new Error("No response received");
         } else {
-          throw new Error(err.message)
+          throw new Error(err.message);
         }
       }
-    
     },
     onMutate: () => {
       toast.loading("loading...");
     },
     onSuccess: () => {
-      // refetch posts
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       toast.dismiss();
       toast.success("Post deleted successfully");
@@ -54,15 +51,32 @@ const Post = ({ post }) => {
     },
   });
 
+  const likeMutation = useMutation({
+    mutationFn: async (postId) => {
+      const res = await axios.post(`/api/post/like/${postId}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      // TODO: NOT BEST UX
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      
+    },
+  });
+
+  const isLiked = post.likes.includes(authuser._id);
+
   const handleDeletePost = () => {
-    // delete the post and refetch the data
-    mutation.mutate(post._id);
+    deleteMutation.mutate(post._id);
   };
 
   const handlePostComment = (e) => {
     e.preventDefault();
   };
-  const handleLikePost = () => {};
+
+  const handleLikePost = () => {
+    if (likeMutation.isPending) return;
+    likeMutation.mutate(post._id);
+  };
 
   return (
     <div className="flex gap-2 items-start p-4 border-b border-gray-700">
@@ -91,13 +105,13 @@ const Post = ({ post }) => {
           </span>
           {isMyPost && (
             <span className="flex justify-end flex-1">
-              {!mutation.isPending ? (
+              {!deleteMutation.isLoading ? (
                 <FaTrash
                   className="cursor-pointer hover:text-red-500"
                   onClick={handleDeletePost}
                 />
               ) : (
-                <AiOutlineLoading3Quarters />
+                <AiOutlineLoading3Quarters className="animate-spin" />
               )}
             </span>
           )}
@@ -197,14 +211,18 @@ const Post = ({ post }) => {
               className="flex gap-1 items-center group cursor-pointer"
               onClick={handleLikePost}
             >
-              {!isLiked ? (
+              {!isLiked && !likeMutation.isPending && (
                 <FaRegHeart className="w-4 h-4 cursor-pointer text-slate-500 group-hover:text-pink-500" />
-              ) : (
-                <FaRegHeart className="w-4 h-4 cursor-pointer text-pink-500" />
+              )}
+              {isLiked && !likeMutation.isPending && (
+                <FaHeart className="w-4 h-4 cursor-pointer text-pink-500" />
+              )}
+              {likeMutation.isPending && (
+                <ImSpinner9 className="animate-spin w-4 h-4 text-slate-500" />
               )}
               <span
-                className={`text-sm text-slate-500 group-hover:text-pink-500 ${
-                  isLiked ? "text-pink-500" : ""
+                className={`text-sm group-hover:text-pink-500 ${
+                  isLiked ? "text-pink-500" : "text-slate-500"
                 }`}
               >
                 {post.likes?.length || 0}
