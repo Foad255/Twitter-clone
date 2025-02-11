@@ -10,17 +10,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { formatDatePost } from "../../utils/date";
 
 const Post = ({ post }) => {
   const [comment, setComment] = useState("");
   const postOwner = post.user;
 
-  const isCommenting = false;
   const { data: authuser } = useQuery({ queryKey: ["authUser"] });
   const isMyPost = authuser._id === post.user._id;
 
   const queryClient = useQueryClient();
-  const formattedDate = "1h";
+  const formattedDate = formatDatePost(post.createdAt)
 
   const deleteMutation = useMutation({
     mutationFn: async (postId) => {
@@ -62,7 +62,20 @@ const Post = ({ post }) => {
       
     },
   });
-
+  const commentMutation = useMutation({
+    mutationFn: async ({ postId, text }) => {
+      const res = await axios.post(`/api/post/comment/${postId}`, { text });
+      return res.data;
+    },
+    onSuccess: () => {
+      toast.success('Comment posted successfully');
+      setComment('');
+      queryClient.invalidateQueries({ queryKey: ["posts"] }); // Refresh posts to show new comment
+    },
+    onError: (error) => {
+      toast.error(`Error posting comment: ${error.message}`);
+    }
+  });
   const isLiked = post.likes.includes(authuser._id);
 
   const handleDeletePost = () => {
@@ -71,6 +84,9 @@ const Post = ({ post }) => {
 
   const handlePostComment = (e) => {
     e.preventDefault();
+    // if (comment.trim() === "") return; // Prevent empty comments
+    // if (commentMutation.isPending) return;
+    commentMutation.mutate({ postId: post._id, text: comment });
   };
 
   const handleLikePost = () => {
@@ -105,14 +121,14 @@ const Post = ({ post }) => {
           </span>
           {isMyPost && (
             <span className="flex justify-end flex-1">
-              {!deleteMutation.isLoading ? (
+              {!deleteMutation.isPending ? (
                 <FaTrash
                   className="cursor-pointer hover:text-red-500"
                   onClick={handleDeletePost}
                 />
-              ) : (
+              ) : 
                 <AiOutlineLoading3Quarters className="animate-spin" />
-              )}
+              }
             </span>
           )}
         </div>
@@ -131,27 +147,27 @@ const Post = ({ post }) => {
             <div
               className="flex gap-1 items-center cursor-pointer group"
               onClick={() =>
-                document.getElementById("comments_modal" + post._id).showModal()
+                document.getElementById("comment_modal" + post._id).showModal()
               }
             >
               <FaRegComment className="w-4 h-4 text-slate-500 group-hover:text-sky-400" />
               <span className="text-sm text-slate-500 group-hover:text-sky-400">
-                {post.comments?.length || 0}
+                {post.comment?.length || 0}
               </span>
             </div>
             <dialog
-              id={`comments_modal${post._id}`}
+              id={`comment_modal${post._id}`}
               className="modal border-none outline-none"
             >
               <div className="modal-box rounded border border-gray-600">
-                <h3 className="font-bold text-lg mb-4">COMMENTS</h3>
+                <h3 className="font-bold text-lg mb-4">comment</h3>
                 <div className="flex flex-col gap-3 max-h-60 overflow-auto">
-                  {post.comments?.length === 0 && (
+                  {post.comment?.length === 0 && (
                     <p className="text-sm text-slate-500">
-                      No comments yet 🤔 Be the first one 😉
+                      No comment yet 🤔 Be the first one 😉
                     </p>
                   )}
-                  {post.comments?.map((comment) => (
+                  {post.comment?.map((comment) => (
                     <div key={comment._id} className="flex gap-2 items-start">
                       <div className="avatar">
                         <div className="w-8 rounded-full">
@@ -189,8 +205,8 @@ const Post = ({ post }) => {
                     onChange={(e) => setComment(e.target.value)}
                   />
                   <button className="btn btn-primary rounded-full btn-sm text-white px-4">
-                    {isCommenting ? (
-                      <span className="loading loading-spinner loading-md"></span>
+                    {commentMutation.isPending ? (
+                        <ImSpinner9 />
                     ) : (
                       "Post"
                     )}

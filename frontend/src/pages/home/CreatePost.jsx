@@ -103,7 +103,7 @@ const queryClient = useQueryClient()
 						<BsEmojiSmileFill className='fill-primary w-5 h-5 cursor-pointer' />
 					</div>
 					<input accept='image/*' hidden type='file' ref={imgRef} onChange={handleImgChange} />
-					<button className='btn btn-primary rounded-full btn-sm text-white px-4'>
+					<button className='btn btn-primary rounded-full btn-sm text-white px-4'  disabled={mutation.isPending}>
 						{mutation.isPaused ? "Posting..." : "Post"}
 					</button>
 				</div>
