@@ -110,7 +110,7 @@ const Post = ({ post }) => {
       <div className="flex flex-col flex-1">
         <div className="flex gap-2 items-center">
           <Link to={`/profile/${postOwner?.userName}`} className="font-bold">
-            {postOwner?.fullName}
+            {postOwner?.userName + ' ' + postOwner.fullName}
           </Link>
           <span className="text-gray-700 flex gap-1 text-sm">
             <Link to={`/profile/${postOwner?.userName}`}>

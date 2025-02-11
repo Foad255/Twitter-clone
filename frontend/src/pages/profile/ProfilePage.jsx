@@ -4,8 +4,6 @@ import { Link, useParams } from "react-router-dom";
 import Posts from "../../components/common/Posts";
 import EditProfileModal from "./EditProfileModal";
 
-// import { POSTS } from "../../utils/db/dummy";
-
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
 import { ImSpinner9 } from "react-icons/im";
@@ -100,9 +98,6 @@ const ProfilePage = () => {
                 </Link>
                 <div className="flex flex-col">
                   <p className="font-bold text-lg">{user?.userName}</p>
-                  <span className="text-sm text-slate-500">
-                    {Posts?.length} posts
-                  </span>
                 </div>
               </div>
               {/* COVER IMG */}
@@ -173,7 +168,11 @@ const ProfilePage = () => {
                 {(coverImg || profileImg) && (
                   <button
                     className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
-                    onClick={() => mutation.mutate()}
+                    onClick={ async () => {
+                     await mutation.mutateAsync()
+                     setCoverImg(null)
+                     setProfileImg(null)
+                    }}
                   >
                     {mutation.isPending ? "updating..." : "Update"}
                   </button>
@@ -269,43 +268,3 @@ const ProfilePage = () => {
 };
 export default ProfilePage;
 
-// TODO: useQuery(queryKey) re-fetch when the key changes or it's going to give me the same result because the cache doesn't update
-
-// queryClient.invalidation(queryKey) forcing the query with this key to re-fetch the data so the cache is changed
-
-//  remember that you have one cache if refetch the cache updates
-
-// but you can have more than one cache like versionedQuery
-/* 
-import { useQuery, queryClient } from 'react-query';
-import axios from 'axios';
-
-const fetchUserProfile = async (username, version) => {
-  const res = await axios.get(`/api/user/profile/${username}`);
-  return { version, data: res.data.message };
-};
-
-const useVersionedQuery = (username) => {
-  return useQuery({
-    queryKey: ["userProfile", username],
-    queryFn: async ({ queryKey }) => {
-      const [, username, version] = queryKey;
-      const res = await fetchUserProfile(username, version);
-      return res;
-    },
-    select: (data) => {
-      // Custom logic to handle versioning
-      const previousVersions = queryClient.getQueryData(["userProfileVersions", username]) || [];
-      const newVersions = [...previousVersions, data];
-      queryClient.setQueryData(["userProfileVersions", username], newVersions);
-      return newVersions;
-    }
-  });
-};
-
-// Usage in a component
-const { data: userVersions, isLoading } = useVersionedQuery(username);
-
-console.log(userVersions);
-
-*/
