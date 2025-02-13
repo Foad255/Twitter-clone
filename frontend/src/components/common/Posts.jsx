@@ -3,7 +3,7 @@ import PostSkeleton from "../skeletons/PostSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const Posts = ({ feedtype , username, userId }) => {
+const Posts = ({ feedtype, username, userId }) => {
   const getPostsEndpoint = () => {
     switch (feedtype) {
       case "forYou":
@@ -11,9 +11,9 @@ const Posts = ({ feedtype , username, userId }) => {
       case "following":
         return "/api/post/following";
       case "posts":
-        return `/api/post/user/${username}`
+        return `/api/post/user/${username}`;
       case "likes":
-        return `/api/post/liked/${userId}`
+        return `/api/post/liked/${userId}`;
       default:
         return "/api/post/all";
     }

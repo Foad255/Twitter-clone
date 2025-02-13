@@ -58,7 +58,7 @@ const EditProfileModal = ({ authUser }) => {
         window.location.href = `/profile/${newUsername}`;
       }
       toast.success("Updated successfully");
-			document.getElementById("edit_profile_modal").close();
+      document.getElementById("edit_profile_modal").close();
     },
   });
 

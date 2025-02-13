@@ -11,7 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
 const Sidebar = () => {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async () => {
       try {
@@ -31,14 +31,13 @@ const Sidebar = () => {
       }
     },
     onSuccess: () => {
-      toast.success('Success')
-    	queryClient.invalidateQueries({queryKey: ['authUser']})
+      toast.success("Success");
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
   });
 
-
-// get the data which is already fetched under querykey : 'authUser'
- const {data:authUser} = useQuery({queryKey: ['authUser']})
+  // get the data which is already fetched under querykey : 'authUser'
+  const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 
   return (
     <div className="md:flex-[2_2_0] w-18 max-w-52">
@@ -89,14 +88,14 @@ const Sidebar = () => {
             <div className="flex justify-between flex-1">
               <div className="hidden md:block">
                 <p className="text-white font-bold text-sm w-20 truncate">
-                  {authUser?.fullName}
+                  {authUser?.userName}
                 </p>
                 <p className="text-slate-500 text-sm">@{authUser?.userName}</p>
               </div>
               <BiLogOut
                 onClick={(e) => {
-									// to not take me to the profile page
-									e.preventDefault();
+                  // to not take me to the profile page
+                  e.preventDefault();
                   mutation.mutate();
                 }}
                 className="w-5 h-5 cursor-pointer"

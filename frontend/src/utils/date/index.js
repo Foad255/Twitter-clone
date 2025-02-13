@@ -2,48 +2,50 @@ export const formatDatePost = (dateString) => {
   const date = new Date(dateString);
   const now = new Date();
   const seconds = Math.floor((now - date) / 1000);
-  
+
   let interval = Math.floor(seconds / 31536000);
-  if (interval >= 1) return `${interval} year${interval === 1 ? '' : 's'} ago`;
-  
+  if (interval >= 1) return `${interval} year${interval === 1 ? "" : "s"} ago`;
+
   interval = Math.floor(seconds / 2592000);
-  if (interval >= 1) return `${interval} month${interval === 1 ? '' : 's'} ago`;
-  
+  if (interval >= 1) return `${interval} month${interval === 1 ? "" : "s"} ago`;
+
   interval = Math.floor(seconds / 86400);
-  if (interval >= 1) return `${interval} day${interval === 1 ? '' : 's'} ago`;
-  
+  if (interval >= 1) return `${interval} day${interval === 1 ? "" : "s"} ago`;
+
   interval = Math.floor(seconds / 3600);
-  if (interval >= 1) return `${interval} hour${interval === 1 ? '' : 's'} ago`;
-  
+  if (interval >= 1) return `${interval} hour${interval === 1 ? "" : "s"} ago`;
+
   interval = Math.floor(seconds / 60);
-  if (interval >= 1) return `${interval} minute${interval === 1 ? '' : 's'} ago`;
-  
-  return 'Just now';
+  if (interval >= 1)
+    return `${interval} minute${interval === 1 ? "" : "s"} ago`;
+
+  return "Just now";
 };
-
-
 
 export const formatMemberSinceDate = (dateString) => {
   const date = new Date(dateString);
   const now = new Date();
   const seconds = Math.floor((now - date) / 1000);
-  
+
   let interval = Math.floor(seconds / 31536000);
-  if (interval >= 1) return `Joined ${interval} year${interval === 1 ? '' : 's'} ago`;
-  
+  if (interval >= 1)
+    return `Joined ${interval} year${interval === 1 ? "" : "s"} ago`;
+
   interval = Math.floor(seconds / 2592000);
-  if (interval >= 1) return `Joined ${interval} month${interval === 1 ? '' : 's'} ago`;
-  
+  if (interval >= 1)
+    return `Joined ${interval} month${interval === 1 ? "" : "s"} ago`;
+
   interval = Math.floor(seconds / 86400);
-  if (interval >= 1) return `Joined ${interval} day${interval === 1 ? '' : 's'} ago`;
-  
+  if (interval >= 1)
+    return `Joined ${interval} day${interval === 1 ? "" : "s"} ago`;
+
   interval = Math.floor(seconds / 3600);
-  if (interval >= 1) return `Joined ${interval} hour${interval === 1 ? '' : 's'} ago`;
-  
+  if (interval >= 1)
+    return `Joined ${interval} hour${interval === 1 ? "" : "s"} ago`;
+
   interval = Math.floor(seconds / 60);
-  if (interval >= 1) return `Joined ${interval} minute${interval === 1 ? '' : 's'} ago`;
-  
-  return 'Joined just now';
+  if (interval >= 1)
+    return `Joined ${interval} minute${interval === 1 ? "" : "s"} ago`;
+
+  return "Joined just now";
 };
-
-

@@ -20,7 +20,7 @@ const Post = ({ post }) => {
   const isMyPost = authuser._id === post.user._id;
 
   const queryClient = useQueryClient();
-  const formattedDate = formatDatePost(post.createdAt)
+  const formattedDate = formatDatePost(post.createdAt);
 
   const deleteMutation = useMutation({
     mutationFn: async (postId) => {
@@ -59,7 +59,6 @@ const Post = ({ post }) => {
     onSuccess: () => {
       // TODO: NOT BEST UX
       queryClient.invalidateQueries({ queryKey: ["posts"] });
-      
     },
   });
   const commentMutation = useMutation({
@@ -68,13 +67,13 @@ const Post = ({ post }) => {
       return res.data;
     },
     onSuccess: () => {
-      toast.success('Comment posted successfully');
-      setComment('');
+      toast.success("Comment posted successfully");
+      setComment("");
       queryClient.invalidateQueries({ queryKey: ["posts"] }); // Refresh posts to show new comment
     },
     onError: (error) => {
       toast.error(`Error posting comment: ${error.message}`);
-    }
+    },
   });
   const isLiked = post.likes.includes(authuser._id);
 
@@ -110,7 +109,7 @@ const Post = ({ post }) => {
       <div className="flex flex-col flex-1">
         <div className="flex gap-2 items-center">
           <Link to={`/profile/${postOwner?.userName}`} className="font-bold">
-            {postOwner?.userName + ' ' + postOwner.fullName}
+            {postOwner?.userName + " " + postOwner.fullName}
           </Link>
           <span className="text-gray-700 flex gap-1 text-sm">
             <Link to={`/profile/${postOwner?.userName}`}>
@@ -126,9 +125,9 @@ const Post = ({ post }) => {
                   className="cursor-pointer hover:text-red-500"
                   onClick={handleDeletePost}
                 />
-              ) : 
+              ) : (
                 <AiOutlineLoading3Quarters className="animate-spin" />
-              }
+              )}
             </span>
           )}
         </div>
@@ -183,7 +182,9 @@ const Post = ({ post }) => {
                       <div className="flex flex-col">
                         <div className="flex items-center gap-1">
                           <span className="font-bold">
-                            {comment.user?.fullName}
+                            {comment.user?.userName +
+                              " " +
+                              comment.user?.fullName}
                           </span>
                           <span className="text-gray-700 text-sm">
                             @{comment.user?.userName}
@@ -205,11 +206,7 @@ const Post = ({ post }) => {
                     onChange={(e) => setComment(e.target.value)}
                   />
                   <button className="btn btn-primary rounded-full btn-sm text-white px-4">
-                    {commentMutation.isPending ? (
-                        <ImSpinner9 />
-                    ) : (
-                      "Post"
-                    )}
+                    {commentMutation.isPending ? <ImSpinner9 /> : "Post"}
                   </button>
                 </form>
               </div>

@@ -168,10 +168,10 @@ const ProfilePage = () => {
                 {(coverImg || profileImg) && (
                   <button
                     className="btn btn-primary rounded-full btn-sm text-white px-4 ml-2"
-                    onClick={ async () => {
-                     await mutation.mutateAsync()
-                     setCoverImg(null)
-                     setProfileImg(null)
+                    onClick={async () => {
+                      await mutation.mutateAsync();
+                      setCoverImg(null);
+                      setProfileImg(null);
                     }}
                   >
                     {mutation.isPending ? "updating..." : "Update"}
@@ -267,4 +267,3 @@ const ProfilePage = () => {
   );
 };
 export default ProfilePage;
-

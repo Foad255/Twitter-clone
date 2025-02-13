@@ -9,8 +9,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const NotificationPage = () => {
-
-	const queryClient1 = useQueryClient()
+  const queryClient1 = useQueryClient();
 
   const queryClient = useQuery({
     queryKey: ["Notifications"],
@@ -32,8 +31,8 @@ const NotificationPage = () => {
     },
   });
 
-	const mutation = useMutation({
-		mutationFn: async () => {
+  const mutation = useMutation({
+    mutationFn: async () => {
       try {
         const res = await axios.delete("/api/notifications");
         return res.data;
@@ -49,18 +48,17 @@ const NotificationPage = () => {
         }
       }
     },
-		onSuccess: () => {
-			queryClient1.invalidateQueries({queryKey: ['Notifications']})
-			toast.success('Deleted successfully')
-			
-		}
-	})
+    onSuccess: () => {
+      queryClient1.invalidateQueries({ queryKey: ["Notifications"] });
+      toast.success("Deleted successfully");
+    },
+  });
 
-	const deleteNotifications = () => {
-		mutation.mutate()
-	}
-	const notifications = queryClient.data
-	const isLoading = queryClient.isLoading
+  const deleteNotifications = () => {
+    mutation.mutate();
+  };
+  const notifications = queryClient.data;
+  const isLoading = queryClient.isLoading;
   return (
     <>
       <div className="flex-[4_4_0] border-l border-r border-gray-700 min-h-screen">

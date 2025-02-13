@@ -56,7 +56,7 @@ const RightPanel = () => {
                   </div>
                   <div className="flex flex-col">
                     <span className="font-semibold tracking-tight truncate w-28">
-                      {user.fullName}
+                      {user.userName + " " + user.fullName}
                     </span>
                     <span className="text-sm text-slate-500">
                       @{user.userName}

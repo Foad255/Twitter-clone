@@ -47,11 +47,7 @@ const SignUpPage = () => {
       toast.dismiss();
       toast.success("Email Created successfully");
       navigate("/"); // Navigate to the welcome page after successful signup
-    },
-    onError: () => {
-      toast.dismiss();
-      toast.error("Signup failed. Please try again.");
-    },
+    }
   });
 
   const handleSubmit = (e) => {
